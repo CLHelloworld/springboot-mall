@@ -1,12 +1,16 @@
 package com.lee.springbootmall.model;
 
+import com.lee.springbootmall.constant.ProductCatedory;
+
 import java.util.Date;
 
 public class Product {
 
     private Integer productId;
     private String productName;
-    private String category;
+    //category為商品的分類,可用Enum的方式取代
+    //private String category;
+    private ProductCatedory category;
     private String imageUrl;
     private Integer price;
     private Integer stock;
@@ -30,11 +34,11 @@ public class Product {
         this.productName = productName;
     }
 
-    public String getCategory() {
+    public ProductCatedory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(ProductCatedory category) {
         this.category = category;
     }
 

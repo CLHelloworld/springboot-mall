@@ -18,6 +18,7 @@ public class ProductController {
 
     // 處理 GET 請求，獲取特定 productId 的商品
     @GetMapping("/products/{productId}")
+    //當前端來請求這個API時會回傳Product這個類型的Json給前端
     // getProduct() 方法表示 productId 這個值是從上方路徑來的
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
 
