@@ -1,12 +1,17 @@
 package com.lee.springbootmall.dao.impl;
 
 import com.lee.springbootmall.dao.ProductDao;
+import com.lee.springbootmall.dto.ProductResquest;
 import com.lee.springbootmall.model.Product;
 import com.lee.springbootmall.rowmapper.ProductRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,5 +43,38 @@ public class ProductDaoImpl implements ProductDao {
         } else {
             return null;
         }
+    }
+    // 定義一個方法，用於新增產品至資料庫，傳入一個 ProductResquest 物件作為參數
+    //這個方法主要是透過 JDBC 的 NamedParameterJdbcTemplate 來執行 SQL 語句，並使用命名參數的方式來傳遞參數值。
+    //同時，使用 KeyHolder 來獲取自動生成的 productId，以便後續需要這個產品的唯一識別碼。
+    @Override
+    public Integer createProduct(ProductResquest productResquest) {
+        // 準備 SQL 語句，使用命名參數 ":parameter" 的方式，避免 SQL 注入攻擊
+        String sql = "INSERT INTO  product(PRODUCT_NAME, category, IMAGE_URL, PRICE, STOCK, DESCRIPTION, CREATED_DATE, LAST_MODIFIED_DATE) " +
+                "VALUES (:productName, :category, :imageUrl, :price, :stock, :description, :createdDate, :lastModifiedDate)";
+
+        //創建一個map,將前端所傳來的參數一個一個放進map裡,用於存放 SQL 語句中的命名參數及其對應的值
+        Map<String, Object> map = new HashMap<>();
+        // 將 ProductResquest 物件的屬性值逐一放入 Map 中
+        map.put("productName", productResquest.getProductName());
+        map.put("category", productResquest.getCategory());
+        map.put("imageUrl", productResquest.getImageUrl());
+        map.put("price", productResquest.getPrice());
+        map.put("stock", productResquest.getStock());
+        map.put("description", productResquest.getDescription());
+
+        // 創建一個當前時間的 Date 物件，並將其放入 Map 中作為商品的創建時間和最後修改時間
+        Date now = new Date();
+        map.put("createdDate", now);
+        map.put("lastModifiedDate", now);
+
+        // 使用 KeyHolder 來取得資料庫自動生成的 productId，這是為了在新增後能夠取得新建立的產品的唯一識別碼
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        // 使用 namedParameterJdbcTemplate 來執行 SQL 語句，並傳入命名參數和 KeyHolder
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map),keyHolder);
+        // 從 KeyHolder 中取得自動生成的 productId，轉換成 int 類型後返回
+        int productId = keyHolder.getKey().intValue();
+        // 返回新建立的產品的唯一識別碼
+        return productId;
     }
 }

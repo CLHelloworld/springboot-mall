@@ -1,33 +1,26 @@
-package com.lee.springbootmall.model;
-
+package com.lee.springbootmall.dto;
 
 import com.lee.springbootmall.constant.ProductCategory;
+import jakarta.validation.constraints.NotNull;
 
-import java.util.Date;
+//dto放前端傳過來要驗證的變數  專門配合VO開一個class來根據前端會傳過來的參數做驗證
+public class ProductResquest {
 
-public class Product {
-
-    private Integer productId;
+//    private Integer productId;//自增主鍵不是前端會傳過來的參數
+    @NotNull
     private String productName;
-    //category為商品的分類,可用Enum的方式取代
-    //private String category;
+    @NotNull
     private ProductCategory category;
+    @NotNull
     private String imageUrl;
+    @NotNull
     private Integer price;
+    @NotNull
     private Integer stock;
+
     private String description;
-    //Spring boot 預設Data類型會使用GMT+0(英國格林威治時間)返回
-    //無效 沒有時間 待研究
-    private Date createdDate;
-    private Date lastModifiedDate;
-
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
+//    private Date createdDate; //這兩種Data會由Spring boot程式設定
+//    private Date lastModifiedDate;
 
     public String getProductName() {
         return productName;
@@ -75,21 +68,5 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 }
