@@ -18,6 +18,7 @@ public class ProductRowMapper implements RowMapper<Product> {
         // product.setCategory(resultSet.getString("category"));
         // 跟 model 的 VO 有關 String和Enum的轉換
         // 創一個字串變數去接住resultSet出來的值,再將字串轉換成Enum類型
+
         String categoryStr = resultSet.getString("category");
         ProductCategory category = ProductCategory.valueOf(categoryStr);
         product.setCategory(category);
@@ -28,8 +29,8 @@ public class ProductRowMapper implements RowMapper<Product> {
         product.setPrice(resultSet.getInt("price"));
         product.setStock(resultSet.getInt("stock"));
         product.setDescription(resultSet.getString("description"));
-        product.setCreatedDate(resultSet.getDate("created_date"));
-        product.setLastModifiedDate(resultSet.getDate("last_modified_date"));
+        product.setCreatedDate(resultSet.getTimestamp("created_date"));
+        product.setLastModifiedDate(resultSet.getTimestamp("last_modified_date"));
 
         return product;
     }

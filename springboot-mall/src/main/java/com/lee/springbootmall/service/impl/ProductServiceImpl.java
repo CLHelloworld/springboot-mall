@@ -22,4 +22,10 @@ public class ProductServiceImpl implements ProductService {
         //實做完後再去Dao層
         return productDao.createProduct(productResquest);
     }
+
+    @Override
+    public void updateProduct(Integer productId, ProductResquest productResquest) {
+        //預期Dao內有updateProduct()方法
+        productDao.updateProduct(productId,productResquest);
+    }
 }

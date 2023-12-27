@@ -7,4 +7,6 @@ public interface ProductDao {
     Product getProductById(Integer productid);
 
     Integer createProduct(ProductResquest productResquest);
+
+    void updateProduct(Integer productId, ProductResquest productResquest);
 }

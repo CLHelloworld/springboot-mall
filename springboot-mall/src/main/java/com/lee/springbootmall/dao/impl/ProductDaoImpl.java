@@ -31,11 +31,11 @@ public class ProductDaoImpl implements ProductDao {
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE product_id = :productId";
 
         // 設定 SQL 查詢中的參數，這裡是將 ":productId" 設為實際的商品ID值
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("productId", productId);
+        Map<String, Object> map = new HashMap<>();
+        map.put("productId", productId);
 
         // 使用 NamedParameterJdbcTemplate 來執行 SQL 查詢，並指定 ProductRowMapper 來映射查詢結果
-        List<Product> productList = namedParameterJdbcTemplate.query(sql, paramMap, new ProductRowMapper());
+        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
         // 如果查詢結果非空，則返回第一個商品；否則返回空值
         if (!productList.isEmpty()) {
@@ -44,6 +44,7 @@ public class ProductDaoImpl implements ProductDao {
             return null;
         }
     }
+
     // 定義一個方法，用於新增產品至資料庫，傳入一個 ProductResquest 物件作為參數
     //這個方法主要是透過 JDBC 的 NamedParameterJdbcTemplate 來執行 SQL 語句，並使用命名參數的方式來傳遞參數值。
     //同時，使用 KeyHolder 來獲取自動生成的 productId，以便後續需要這個產品的唯一識別碼。
@@ -57,7 +58,7 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, Object> map = new HashMap<>();
         // 將 ProductResquest 物件的屬性值逐一放入 Map 中
         map.put("productName", productResquest.getProductName());
-        map.put("category", productResquest.getCategory());
+        map.put("category", productResquest.getCategory().toString());//記得要加上toString
         map.put("imageUrl", productResquest.getImageUrl());
         map.put("price", productResquest.getPrice());
         map.put("stock", productResquest.getStock());
@@ -71,10 +72,36 @@ public class ProductDaoImpl implements ProductDao {
         // 使用 KeyHolder 來取得資料庫自動生成的 productId，這是為了在新增後能夠取得新建立的產品的唯一識別碼
         KeyHolder keyHolder = new GeneratedKeyHolder();
         // 使用 namedParameterJdbcTemplate 來執行 SQL 語句，並傳入命名參數和 KeyHolder
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map),keyHolder);
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
         // 從 KeyHolder 中取得自動生成的 productId，轉換成 int 類型後返回
         int productId = keyHolder.getKey().intValue();
         // 返回新建立的產品的唯一識別碼
         return productId;
+    }
+
+    @Override
+    public void updateProduct(Integer productId, ProductResquest productResquest) {
+        // 準備 SQL 語句，使用命名參數 ":parameter" 的方式，避免 SQL 注入攻擊
+        String sql = "UPDATE product SET " +
+                "PRODUCT_NAME = :productName, category = :category, IMAGE_URL = :imageUrl, PRICE = :price," +
+                "STOCK = :stock, DESCRIPTION = :description, LAST_MODIFIED_DATE = :lastModifiedDate " +
+                "WHERE product_id = :productId";
+
+        //創建一個map,將前端所傳來的參數一個一個放進map裡,用於存放 SQL 語句中的命名參數及其對應的值
+        Map<String, Object> map = new HashMap<>();
+        map.put("productId",productId);
+
+        // 將 ProductResquest 物件的屬性值逐一放入 Map 中
+        map.put("productName", productResquest.getProductName());
+        map.put("category", productResquest.getCategory().toString());//記得要加上toString
+        map.put("imageUrl", productResquest.getImageUrl());
+        map.put("price", productResquest.getPrice());
+        map.put("stock", productResquest.getStock());
+        map.put("description", productResquest.getDescription());
+        //記錄當下時間當成最後修改時間
+        map.put("lastModifiedDate",new Date());
+        // 使用 namedParameterJdbcTemplate 來執行 SQL 語句，並傳入命名參數和 KeyHolder
+        namedParameterJdbcTemplate.update(sql, map);
+
     }
 }
