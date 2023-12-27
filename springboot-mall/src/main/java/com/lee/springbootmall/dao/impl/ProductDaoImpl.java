@@ -4,6 +4,7 @@ import com.lee.springbootmall.dao.ProductDao;
 import com.lee.springbootmall.dto.ProductResquest;
 import com.lee.springbootmall.model.Product;
 import com.lee.springbootmall.rowmapper.ProductRowMapper;
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,6 +23,24 @@ public class ProductDaoImpl implements ProductDao {
     // Spring 自動注入 NamedParameterJdbcTemplate 實例
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Override
+    public List<Product> getProducts() {
+        // 準備 SQL 查詢語句，目的是從 `product` 表中選取產品的所有資訊
+        String sql = "SELECT product_id, product_name, category, image_url, price, " +
+                "stock, description, created_date, last_modified_date FROM product";
+
+        // 創建一個空的 HashMap，用於 namedParameterJdbcTemplate 的查詢參數。
+        // 在這個查詢中實際上並沒有使用到任何參數，所以傳入一個空的 map。
+        Map<String,Object> map = new HashMap<>();
+
+        // 使用 namedParameterJdbcTemplate 執行查詢，並提供 SQL 語句、參數的 map
+        // 以及一個 RowMapper 實例，這裡使用的是 ProductRowMapper，它會將 SQL 查詢的結果集映射到 Product 對象的列表中。
+        List<Product> productList = namedParameterJdbcTemplate.query(sql,map,new ProductRowMapper());
+
+        // 返回查詢到的產品列表。
+        return productList;
+    }
 
     // 實現 ProductDao 介面中的方法，根據商品ID查詢商品
     @Override
