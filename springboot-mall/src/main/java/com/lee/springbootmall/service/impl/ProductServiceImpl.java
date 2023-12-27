@@ -28,4 +28,9 @@ public class ProductServiceImpl implements ProductService {
         //預期Dao內有updateProduct()方法
         productDao.updateProduct(productId,productResquest);
     }
+
+    @Override
+    public void deleteProductById(Integer productId) {
+        productDao.deleteProductById(productId);
+    }
 }

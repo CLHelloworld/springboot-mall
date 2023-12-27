@@ -89,7 +89,7 @@ public class ProductDaoImpl implements ProductDao {
 
         //創建一個map,將前端所傳來的參數一個一個放進map裡,用於存放 SQL 語句中的命名參數及其對應的值
         Map<String, Object> map = new HashMap<>();
-        map.put("productId",productId);
+        map.put("productId", productId);
 
         // 將 ProductResquest 物件的屬性值逐一放入 Map 中
         map.put("productName", productResquest.getProductName());
@@ -99,9 +99,20 @@ public class ProductDaoImpl implements ProductDao {
         map.put("stock", productResquest.getStock());
         map.put("description", productResquest.getDescription());
         //記錄當下時間當成最後修改時間
-        map.put("lastModifiedDate",new Date());
+        map.put("lastModifiedDate", new Date());
         // 使用 namedParameterJdbcTemplate 來執行 SQL 語句，並傳入命名參數和 KeyHolder
         namedParameterJdbcTemplate.update(sql, map);
 
+    }
+
+    @Override
+    public void deleteProductById(Integer productId) {
+
+        String sql = "DELETE FROM product WHERE product_id = :productId";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("productId",productId);
+
+        namedParameterJdbcTemplate.update(sql, map);
     }
 }
