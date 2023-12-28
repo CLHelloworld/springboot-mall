@@ -9,15 +9,17 @@ public class Product {
 
     private Integer productId;
     private String productName;
+
     //category為商品的分類,可用Enum的方式取代
     //private String category;
     private ProductCategory category;
+
     private String imageUrl;
     private Integer price;
     private Integer stock;
     private String description;
+
     //Spring boot 預設Data類型會使用GMT+0(英國格林威治時間)返回
-    //無效 沒有時間 待研究
     private Date createdDate;
     private Date lastModifiedDate;
 

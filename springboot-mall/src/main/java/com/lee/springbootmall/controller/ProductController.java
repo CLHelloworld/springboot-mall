@@ -1,6 +1,7 @@
 package com.lee.springbootmall.controller;
 
 import com.lee.springbootmall.constant.ProductCategory;
+import com.lee.springbootmall.dto.ProductQueryParams;
 import com.lee.springbootmall.dto.ProductResquest;
 import com.lee.springbootmall.model.Product;
 import com.lee.springbootmall.service.ProductService;
@@ -29,7 +30,13 @@ public class ProductController {
             //使用者輸入查詢的關鍵字
             @RequestParam(required = false) String search
     ){
-        List<Product>productList = productService.getProducts(category,search);
+        //將前端傳來的值set到category和search
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
+        //將本來的category和search參數改成productQueryParams變數
+        //這樣就不用一直修改每一層的參數
+        List<Product>productList = productService.getProducts(productQueryParams);
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
 

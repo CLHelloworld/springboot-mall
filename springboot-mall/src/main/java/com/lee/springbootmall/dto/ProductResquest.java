@@ -19,6 +19,7 @@ public class ProductResquest {
     private Integer stock;
 
     private String description;
+
 //    private Date createdDate; //這兩種Data會由Spring boot程式設定
 //    private Date lastModifiedDate;
 

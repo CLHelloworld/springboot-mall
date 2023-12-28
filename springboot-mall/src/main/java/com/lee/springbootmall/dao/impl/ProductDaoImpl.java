@@ -1,11 +1,10 @@
 package com.lee.springbootmall.dao.impl;
 
-import com.lee.springbootmall.constant.ProductCategory;
 import com.lee.springbootmall.dao.ProductDao;
+import com.lee.springbootmall.dto.ProductQueryParams;
 import com.lee.springbootmall.dto.ProductResquest;
 import com.lee.springbootmall.model.Product;
 import com.lee.springbootmall.rowmapper.ProductRowMapper;
-import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -27,7 +26,7 @@ public class ProductDaoImpl implements ProductDao {
 
     //=====查詢商品列表加上商品分類篩選和使用者輸入篩選=====
     @Override
-    public List<Product> getProducts(ProductCategory category, String search) {
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
         // 準備 SQL 查詢語句，目的是從 `product` 表中選取產品的所有資訊
         // sql後方增加WHERE 1=1不影響原本的查詢結果,當有送來category時可以拼接在後方增加篩選條件
         String sql = "SELECT product_id, product_name, category, image_url, price, " +
@@ -37,17 +36,17 @@ public class ProductDaoImpl implements ProductDao {
         // 在這個查詢中實際上並沒有使用到任何參數，所以傳入一個空的 map。
         Map<String, Object> map = new HashMap<>();
         // 如果提供了產品類別的參數，則在 SQL 語句中添加條件來篩選特定類別的產品。
-        if (category != null) {
+        if (productQueryParams.getCategory() != null) {
             // 添加篩選條件(AND前記得要加上空白鍵)
             sql = sql + " AND category = :category";
             // 將篩選條件加入到參數 map 中, .name是將Enum類型轉為String類型
-            map.put("category", category.name());
+            map.put("category", productQueryParams.getCategory().name());
         }
         //實作使用者自行輸入查詢條件
-        if (search != null) {
+        if (productQueryParams.getSearch() != null) {
             // 添加篩選條件(AND前記得要加上空白鍵),不可把 % 直接加在 LIKE 後 %:search%
             sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + search + "%");
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
         }
 
         // 使用 namedParameterJdbcTemplate 執行查詢，並提供 SQL 語句、參數的 map
