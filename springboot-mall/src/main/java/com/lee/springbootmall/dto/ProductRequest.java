@@ -4,7 +4,7 @@ import com.lee.springbootmall.constant.ProductCategory;
 import jakarta.validation.constraints.NotNull;
 
 //dto放前端傳過來要驗證的變數  專門配合VO開一個class來根據前端會傳過來的參數做驗證
-public class ProductResquest {
+public class ProductRequest {
 
 //    private Integer productId;//自增主鍵不是前端會傳過來的參數
     @NotNull

@@ -2,7 +2,7 @@ package com.lee.springbootmall.service.impl;
 
 import com.lee.springbootmall.dao.ProductDao;
 import com.lee.springbootmall.dto.ProductQueryParams;
-import com.lee.springbootmall.dto.ProductResquest;
+import com.lee.springbootmall.dto.ProductRequest;
 import com.lee.springbootmall.model.Product;
 import com.lee.springbootmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +33,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Integer createProduct(ProductResquest productResquest) {
+    public Integer createProduct(ProductRequest productRequest) {
         //實做完後再去Dao層
-        return productDao.createProduct(productResquest);
+        return productDao.createProduct(productRequest);
     }
 
     @Override
-    public void updateProduct(Integer productId, ProductResquest productResquest) {
+    public void updateProduct(Integer productId, ProductRequest productRequest) {
         //預期Dao內有updateProduct()方法
-        productDao.updateProduct(productId,productResquest);
+        productDao.updateProduct(productId, productRequest);
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.lee.springbootmall.controller;
 
 import com.lee.springbootmall.constant.ProductCategory;
 import com.lee.springbootmall.dto.ProductQueryParams;
-import com.lee.springbootmall.dto.ProductResquest;
+import com.lee.springbootmall.dto.ProductRequest;
 import com.lee.springbootmall.model.Product;
 import com.lee.springbootmall.service.ProductService;
 import com.lee.springbootmall.util.Page;
@@ -149,10 +149,10 @@ public class ProductController {
     //@Valid 若使用經由驗證過例如NotNull之類註解要加上這個註解
     // ProductResquest 經由dto驗證後回來的值
     @PostMapping("/products")
-    public ResponseEntity<Product> creatProduct(@RequestBody @Valid ProductResquest productResquest) {
+    public ResponseEntity<Product> creatProduct(@RequestBody @Valid ProductRequest productRequest) {
         //從Controller實作進去
         //先預設productService會有createProduct這個方法,會去資料庫中創建商品後返回productId回來
-        Integer productId = productService.createProduct(productResquest);
+        Integer productId = productService.createProduct(productRequest);
         //從資料庫取得商品數據,確認的動作
         Product product = productService.getProductById(productId);
         // 回傳狀態碼 HttpStatus.CREATED + 上一行取得的 product 給前端
@@ -162,7 +162,7 @@ public class ProductController {
     @PutMapping("/products/{productId}")
     //接住從路徑來的productId值,@RequestBody接住前端來的參數
     public ResponseEntity<Product> updateProduct(@PathVariable Integer productId,
-                                                 @RequestBody @Valid ProductResquest productResquest) {
+                                                 @RequestBody @Valid ProductRequest productRequest) {
         // 透過 productService 的 getProductById 方法，嘗試根據 productId 獲取產品資訊。
         Product product = productService.getProductById(productId);
 
@@ -178,7 +178,7 @@ public class ProductController {
         }
         //=====修改數據=====
         //預期productService會有updateProduct(Id,修改過的值)方法
-        productService.updateProduct(productId, productResquest);
+        productService.updateProduct(productId, productRequest);
         //productService.getProductById(productId) 從資料庫取得更新後的數據
         Product updateProduct = productService.getProductById(productId);
         //回傳狀態碼和數據傳給前端

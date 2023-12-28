@@ -2,7 +2,7 @@ package com.lee.springbootmall.dao.impl;
 
 import com.lee.springbootmall.dao.ProductDao;
 import com.lee.springbootmall.dto.ProductQueryParams;
-import com.lee.springbootmall.dto.ProductResquest;
+import com.lee.springbootmall.dto.ProductRequest;
 import com.lee.springbootmall.model.Product;
 import com.lee.springbootmall.rowmapper.ProductRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +110,7 @@ public class ProductDaoImpl implements ProductDao {
     //這個方法主要是透過 JDBC 的 NamedParameterJdbcTemplate 來執行 SQL 語句，並使用命名參數的方式來傳遞參數值。
     //同時，使用 KeyHolder 來獲取自動生成的 productId，以便後續需要這個產品的唯一識別碼。
     @Override
-    public Integer createProduct(ProductResquest productResquest) {
+    public Integer createProduct(ProductRequest productRequest) {
         // 準備 SQL 語句，使用命名參數 ":parameter" 的方式，避免 SQL 注入攻擊
         String sql = "INSERT INTO  product(PRODUCT_NAME, category, IMAGE_URL, PRICE, STOCK, DESCRIPTION, CREATED_DATE, LAST_MODIFIED_DATE) " +
                 "VALUES (:productName, :category, :imageUrl, :price, :stock, :description, :createdDate, :lastModifiedDate)";
@@ -118,12 +118,12 @@ public class ProductDaoImpl implements ProductDao {
         //創建一個map,將前端所傳來的參數一個一個放進map裡,用於存放 SQL 語句中的命名參數及其對應的值
         Map<String, Object> map = new HashMap<>();
         // 將 ProductResquest 物件的屬性值逐一放入 Map 中
-        map.put("productName", productResquest.getProductName());
-        map.put("category", productResquest.getCategory().toString());//記得要加上toString
-        map.put("imageUrl", productResquest.getImageUrl());
-        map.put("price", productResquest.getPrice());
-        map.put("stock", productResquest.getStock());
-        map.put("description", productResquest.getDescription());
+        map.put("productName", productRequest.getProductName());
+        map.put("category", productRequest.getCategory().toString());//記得要加上toString
+        map.put("imageUrl", productRequest.getImageUrl());
+        map.put("price", productRequest.getPrice());
+        map.put("stock", productRequest.getStock());
+        map.put("description", productRequest.getDescription());
 
         // 創建一個當前時間的 Date 物件，並將其放入 Map 中作為商品的創建時間和最後修改時間
         Date now = new Date();
@@ -141,7 +141,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public void updateProduct(Integer productId, ProductResquest productResquest) {
+    public void updateProduct(Integer productId, ProductRequest productRequest) {
         // 準備 SQL 語句，使用命名參數 ":parameter" 的方式，避免 SQL 注入攻擊
         String sql = "UPDATE product SET " +
                 "PRODUCT_NAME = :productName, category = :category, IMAGE_URL = :imageUrl, PRICE = :price," +
@@ -153,12 +153,12 @@ public class ProductDaoImpl implements ProductDao {
         map.put("productId", productId);
 
         // 將 ProductResquest 物件的屬性值逐一放入 Map 中
-        map.put("productName", productResquest.getProductName());
-        map.put("category", productResquest.getCategory().toString());//記得要加上toString
-        map.put("imageUrl", productResquest.getImageUrl());
-        map.put("price", productResquest.getPrice());
-        map.put("stock", productResquest.getStock());
-        map.put("description", productResquest.getDescription());
+        map.put("productName", productRequest.getProductName());
+        map.put("category", productRequest.getCategory().toString());//記得要加上toString
+        map.put("imageUrl", productRequest.getImageUrl());
+        map.put("price", productRequest.getPrice());
+        map.put("stock", productRequest.getStock());
+        map.put("description", productRequest.getDescription());
         //記錄當下時間當成最後修改時間
         map.put("lastModifiedDate", new Date());
         // 使用 namedParameterJdbcTemplate 來執行 SQL 語句，並傳入命名參數和 KeyHolder
