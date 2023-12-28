@@ -33,13 +33,8 @@ public class ProductDaoImpl implements ProductDao {
 
         //===== 查詢條件 =====
 
-        // 如果提供了產品類別的參數，則在 SQL 語句中添加條件來篩選特定類別的產品。
-        if (productQueryParams.getCategory() != null) {
-            // 添加篩選條件(AND前記得要加上空白鍵)
-            sql = sql + " AND category = :category";
-            // 將篩選條件加入到參數 map 中, .name是將Enum類型轉為String類型
-            map.put("category", productQueryParams.getCategory().name());
-        }
+        sql = addFilteringSql(sql,map,productQueryParams);
+
         //實作使用者自行輸入查詢條件
         if (productQueryParams.getSearch() != null) {
             // 添加篩選條件(AND前記得要加上空白鍵),不可把 % 直接加在 LIKE 後 %:search%
@@ -66,19 +61,7 @@ public class ProductDaoImpl implements ProductDao {
 
         //===== 查詢條件 =====
 
-        // 如果提供了產品類別的參數，則在 SQL 語句中添加條件來篩選特定類別的產品。
-        if (productQueryParams.getCategory() != null) {
-            // 添加篩選條件(AND前記得要加上空白鍵)
-            sql = sql + " AND category = :category";
-            // 將篩選條件加入到參數 map 中, .name是將Enum類型轉為String類型
-            map.put("category", productQueryParams.getCategory().name());
-        }
-        //實作使用者自行輸入查詢條件
-        if (productQueryParams.getSearch() != null) {
-            // 添加篩選條件(AND前記得要加上空白鍵),不可把 % 直接加在 LIKE 後 %:search%
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%");
-        }
+        sql = addFilteringSql(sql,map,productQueryParams);
 
         //===== 排序 =====
 
@@ -192,5 +175,25 @@ public class ProductDaoImpl implements ProductDao {
         map.put("productId", productId);
 
         namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    private String addFilteringSql(String sql,Map<String,Object> map,ProductQueryParams productQueryParams){
+        //===== 查詢條件 =====
+
+        // 如果提供了產品類別的參數，則在 SQL 語句中添加條件來篩選特定類別的產品。
+        if (productQueryParams.getCategory() != null) {
+            // 添加篩選條件(AND前記得要加上空白鍵)
+            sql = sql + " AND category = :category";
+            // 將篩選條件加入到參數 map 中, .name是將Enum類型轉為String類型
+            map.put("category", productQueryParams.getCategory().name());
+        }
+        //實作使用者自行輸入查詢條件
+        if (productQueryParams.getSearch() != null) {
+            // 添加篩選條件(AND前記得要加上空白鍵),不可把 % 直接加在 LIKE 後 %:search%
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+
+        return sql;
     }
 }
