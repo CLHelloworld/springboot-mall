@@ -48,6 +48,10 @@ public class ProductDaoImpl implements ProductDao {
             sql = sql + " AND product_name LIKE :search";
             map.put("search", "%" + productQueryParams.getSearch() + "%");
         }
+        //實作這種排序的語法只能用字串拼接,無法用sql變數實作
+        //不需要判斷是否為Null因為Controller層已使用defaultValue給預設值
+        //在WHERE後拼接上ORDER BY語法,根據ORDER BY 參數指定的欄位做升序或降序
+        sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 
         // 使用 namedParameterJdbcTemplate 執行查詢，並提供 SQL 語句、參數的 map
         // 以及一個 RowMapper 實例，這裡使用的是 ProductRowMapper，它會將 SQL 查詢的結果集映射到 Product 對象的列表中。

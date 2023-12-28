@@ -23,17 +23,26 @@ public class ProductController {
     //=====查詢商品列表加上商品分類篩選和使用者自行輸入篩選(加上可選參數)=====
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProduct(
+            //===== 查詢條件 Filtering =====
             //加上category請求,前端可以透過傳進來的category值,指定分類的商品
             //@RequestParam 從URL路徑中取參數
             //@RequestParam(required = false)設定category為可選參數
             @RequestParam(required = false) ProductCategory category,
             //使用者輸入查詢的關鍵字
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+            //===== 排序 Sorting =====
+            //根據某個欄位排序(預設根據created_date欄位排序)
+            @RequestParam(defaultValue = "created_date") String orderBy,
+            //使用升序或降序(預設 desc 大到小)
+            @RequestParam(defaultValue = "desc") String sort
+
     ){
         //將前端傳來的值set到category和search
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setCategory(category);
         productQueryParams.setSearch(search);
+        productQueryParams.setOrderBy(orderBy);
+        productQueryParams.setSort(sort);
         //將本來的category和search參數改成productQueryParams變數
         //這樣就不用一直修改每一層的參數
         List<Product>productList = productService.getProducts(productQueryParams);
