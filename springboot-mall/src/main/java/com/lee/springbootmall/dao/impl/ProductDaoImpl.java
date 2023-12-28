@@ -1,5 +1,6 @@
 package com.lee.springbootmall.dao.impl;
 
+import com.lee.springbootmall.constant.ProductCategory;
 import com.lee.springbootmall.dao.ProductDao;
 import com.lee.springbootmall.dto.ProductResquest;
 import com.lee.springbootmall.model.Product;
@@ -24,19 +25,34 @@ public class ProductDaoImpl implements ProductDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    //=====查詢商品列表加上商品分類篩選和使用者輸入篩選=====
     @Override
-    public List<Product> getProducts() {
+    public List<Product> getProducts(ProductCategory category, String search) {
         // 準備 SQL 查詢語句，目的是從 `product` 表中選取產品的所有資訊
+        // sql後方增加WHERE 1=1不影響原本的查詢結果,當有送來category時可以拼接在後方增加篩選條件
         String sql = "SELECT product_id, product_name, category, image_url, price, " +
-                "stock, description, created_date, last_modified_date FROM product";
+                "stock, description, created_date, last_modified_date FROM product WHERE 1=1";
 
         // 創建一個空的 HashMap，用於 namedParameterJdbcTemplate 的查詢參數。
         // 在這個查詢中實際上並沒有使用到任何參數，所以傳入一個空的 map。
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
+        // 如果提供了產品類別的參數，則在 SQL 語句中添加條件來篩選特定類別的產品。
+        if (category != null) {
+            // 添加篩選條件(AND前記得要加上空白鍵)
+            sql = sql + " AND category = :category";
+            // 將篩選條件加入到參數 map 中, .name是將Enum類型轉為String類型
+            map.put("category", category.name());
+        }
+        //實作使用者自行輸入查詢條件
+        if (search != null) {
+            // 添加篩選條件(AND前記得要加上空白鍵),不可把 % 直接加在 LIKE 後 %:search%
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + search + "%");
+        }
 
         // 使用 namedParameterJdbcTemplate 執行查詢，並提供 SQL 語句、參數的 map
         // 以及一個 RowMapper 實例，這裡使用的是 ProductRowMapper，它會將 SQL 查詢的結果集映射到 Product 對象的列表中。
-        List<Product> productList = namedParameterJdbcTemplate.query(sql,map,new ProductRowMapper());
+        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
         // 返回查詢到的產品列表。
         return productList;
@@ -130,7 +146,7 @@ public class ProductDaoImpl implements ProductDao {
         String sql = "DELETE FROM product WHERE product_id = :productId";
 
         Map<String, Object> map = new HashMap<>();
-        map.put("productId",productId);
+        map.put("productId", productId);
 
         namedParameterJdbcTemplate.update(sql, map);
     }

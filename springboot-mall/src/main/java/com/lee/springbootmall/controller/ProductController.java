@@ -1,5 +1,6 @@
 package com.lee.springbootmall.controller;
 
+import com.lee.springbootmall.constant.ProductCategory;
 import com.lee.springbootmall.dto.ProductResquest;
 import com.lee.springbootmall.model.Product;
 import com.lee.springbootmall.service.ProductService;
@@ -18,10 +19,17 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    //=====查詢商品列表=====
+    //=====查詢商品列表加上商品分類篩選和使用者自行輸入篩選(加上可選參數)=====
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProduct(){
-        List<Product>productList = productService.getProducts();
+    public ResponseEntity<List<Product>> getProduct(
+            //加上category請求,前端可以透過傳進來的category值,指定分類的商品
+            //@RequestParam 從URL路徑中取參數
+            //@RequestParam(required = false)設定category為可選參數
+            @RequestParam(required = false) ProductCategory category,
+            //使用者輸入查詢的關鍵字
+            @RequestParam(required = false) String search
+    ){
+        List<Product>productList = productService.getProducts(category,search);
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
 
