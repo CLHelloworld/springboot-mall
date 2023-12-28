@@ -24,6 +24,34 @@ public class ProductDaoImpl implements ProductDao {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    //分頁第二類
+    @Override
+    public Integer countProduct(ProductQueryParams productQueryParams) {
+        String sql = "SELECT count(*) FROM product WHERE 1=1";
+
+        Map<String, Object> map = new HashMap<>();
+
+        //===== 查詢條件 =====
+
+        // 如果提供了產品類別的參數，則在 SQL 語句中添加條件來篩選特定類別的產品。
+        if (productQueryParams.getCategory() != null) {
+            // 添加篩選條件(AND前記得要加上空白鍵)
+            sql = sql + " AND category = :category";
+            // 將篩選條件加入到參數 map 中, .name是將Enum類型轉為String類型
+            map.put("category", productQueryParams.getCategory().name());
+        }
+        //實作使用者自行輸入查詢條件
+        if (productQueryParams.getSearch() != null) {
+            // 添加篩選條件(AND前記得要加上空白鍵),不可把 % 直接加在 LIKE 後 %:search%
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%");
+        }
+        //通常用在取count值的時候(將count轉換為Integer類型的值)
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+
+        return total;
+    }
+
     //=====查詢商品列表加上商品分類篩選和使用者輸入篩選=====
     @Override
     public List<Product> getProducts(ProductQueryParams productQueryParams) {
@@ -62,8 +90,8 @@ public class ProductDaoImpl implements ProductDao {
         //===== 分頁 =====
 
         sql = sql + " LIMIT :limit OFFSET :offset";
-        map.put("limit",productQueryParams.getLimit());
-        map.put("offset",productQueryParams.getOffset());
+        map.put("limit", productQueryParams.getLimit());
+        map.put("offset", productQueryParams.getOffset());
 
         // 使用 namedParameterJdbcTemplate 執行查詢，並提供 SQL 語句、參數的 map
         // 以及一個 RowMapper 實例，這裡使用的是 ProductRowMapper，它會將 SQL 查詢的結果集映射到 Product 對象的列表中。
