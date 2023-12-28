@@ -35,6 +35,9 @@ public class ProductDaoImpl implements ProductDao {
         // 創建一個空的 HashMap，用於 namedParameterJdbcTemplate 的查詢參數。
         // 在這個查詢中實際上並沒有使用到任何參數，所以傳入一個空的 map。
         Map<String, Object> map = new HashMap<>();
+
+        //===== 查詢條件 =====
+
         // 如果提供了產品類別的參數，則在 SQL 語句中添加條件來篩選特定類別的產品。
         if (productQueryParams.getCategory() != null) {
             // 添加篩選條件(AND前記得要加上空白鍵)
@@ -48,10 +51,19 @@ public class ProductDaoImpl implements ProductDao {
             sql = sql + " AND product_name LIKE :search";
             map.put("search", "%" + productQueryParams.getSearch() + "%");
         }
+
+        //===== 排序 =====
+
         //實作這種排序的語法只能用字串拼接,無法用sql變數實作
         //不需要判斷是否為Null因為Controller層已使用defaultValue給預設值
         //在WHERE後拼接上ORDER BY語法,根據ORDER BY 參數指定的欄位做升序或降序
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
+
+        //===== 分頁 =====
+
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit",productQueryParams.getLimit());
+        map.put("offset",productQueryParams.getOffset());
 
         // 使用 namedParameterJdbcTemplate 執行查詢，並提供 SQL 語句、參數的 map
         // 以及一個 RowMapper 實例，這裡使用的是 ProductRowMapper，它會將 SQL 查詢的結果集映射到 Product 對象的列表中。
